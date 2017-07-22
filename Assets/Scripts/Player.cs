@@ -1,82 +1,95 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
-[RequireComponent(typeof(CharacterController))]
-[RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(Animator))]
 
 public class Player : MonoBehaviour
 {
-    CharacterController cc;
-    Rigidbody rb;
+    private CharacterController cc;
     Animator anim;
 
-    Transform playerTransform;
     Vector3 moveDirection = Vector3.zero;
-    
-    private float speed;
-    private bool jump;
-    private float jumpSpeed;
-    private float gravity;
+
+    public float moveSpeed;
+    public float jumpForce;
+    public float verticalVel;
+    public float gravity;
+    public float timeToDuck;
+    public float timeToStand;
+
+    CapsuleCollider capCol;
+
 
     private void Start()
     {
         cc = GetComponent<CharacterController>();
-        rb = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
-        playerTransform = GetComponent<Transform>();
-
-        speed = 10;
-        jumpSpeed = 30f;
-        gravity = 9.81f;
-
-        anim.SetBool("isMoving", true);
+        capCol = GetComponent<CapsuleCollider>();
     }
 
     private void Update()
     {
-        GroundCheck();
-        
-        moveDirection = transform.forward;
-        moveDirection *= speed;
-
-        Vector3 newVel = transform.forward * jumpSpeed;
-        newVel.y = rb.velocity.y;
-
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (cc.isGrounded)
         {
-            if (cc.isGrounded)
-            {
-                Debug.Log("Jump");
+            anim.SetBool("Grounded", true);
+            verticalVel = -gravity * Time.deltaTime;
 
-                newVel.y = -jumpSpeed;
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                verticalVel = jumpForce;
+            }
+        }
+        else
+        {
+            anim.SetBool("Grounded", false);
+            verticalVel -= gravity * Time.deltaTime;
+        }
+
+        if(Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            anim.SetBool("Sliding", true);
+            if(!cc.isGrounded)
+            {
+                verticalVel = -gravity;
             }
         }
 
-        if (cc.isGrounded)
-        {
-            moveDirection.y -= gravity * Time.deltaTime; 
-        }
+        moveDirection.x = moveSpeed;
+
+        moveDirection = new Vector3(moveSpeed, verticalVel, 0);
 
         cc.Move(moveDirection * Time.deltaTime);
     }
 
-    private void GroundCheck()
+    private void OnTriggerEnter(Collider other)
     {
-        if (cc.isGrounded)
+        if(other.gameObject.tag == "Obstacle")
         {
-            anim.SetBool("grounded", true);
-        }
-        else
-        {
-            anim.SetBool("grounded", false);
+            StartCoroutine(WaitForDeath());
         }
     }
 
-    private void ResetPlayer()
+    public void StandardCollider()
     {
-        float currentY = playerTransform.position.y;
-        playerTransform.position = new Vector3(-25, 0, 0);
+        cc.height = 2.5f;
+        capCol.height = 2.5f;
+        anim.SetBool("Sliding", false);
+    }
+
+    public void SlidingCollider()
+    {
+        cc.height = 1f;
+        capCol.height = 1.8f;
+    }
+
+    IEnumerator WaitForDeath()
+    {
+        anim.SetBool("isDead", true);
+        yield return new WaitForSeconds(1.0f);
+
+        DeathScreen();
+    }
+
+    private void DeathScreen()
+    {
+
     }
 }
