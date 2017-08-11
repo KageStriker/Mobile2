@@ -16,8 +16,7 @@ public class Player : MonoBehaviour
     public float timeToStand;
 
     CapsuleCollider capCol;
-
-
+    
     private void Start()
     {
         cc = GetComponent<CharacterController>();
@@ -35,6 +34,7 @@ public class Player : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 verticalVel = jumpForce;
+                anim.SetBool("isSliding", false);
             }
         }
         else
@@ -51,7 +51,6 @@ public class Player : MonoBehaviour
                 verticalVel = -gravity;
             }
         }
-
         moveDirection.x = moveSpeed;
 
         moveDirection = new Vector3(moveSpeed, verticalVel, 0);
@@ -84,12 +83,5 @@ public class Player : MonoBehaviour
     {
         anim.SetBool("isDead", true);
         yield return new WaitForSeconds(1.0f);
-
-        DeathScreen();
-    }
-
-    private void DeathScreen()
-    {
-
     }
 }
