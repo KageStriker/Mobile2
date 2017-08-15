@@ -12,8 +12,6 @@ public class Player : MonoBehaviour
     public float jumpForce;
     public float verticalVel;
     public float gravity;
-    public float timeToDuck;
-    public float timeToStand;
 
     CapsuleCollider capCol;
     
