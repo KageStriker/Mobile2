@@ -32,7 +32,7 @@ public class Player : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 verticalVel = jumpForce;
-                anim.SetBool("isSliding", false);
+                anim.SetBool("Sliding", false);
             }
         }
         else

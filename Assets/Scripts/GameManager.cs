@@ -4,59 +4,80 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+public enum GameState
+{
+    MainMenu,
+    Loading,
+    Game,
+    Pause,
+    ChangeScene
+}
+
 public class GameManager : MonoBehaviour
 {
     static GameManager _instance = null;
+
+    public GameState gameState;
     
     private Canvas canvas;
     public Text highscoreText;
 
-    int highscoreCounter;
-    float multiplier;
+    private float highscoreCounter;
+    private float multiplier;
     
-    // Use this for initialization
-    void Start()
+    private void Start()
     {
-        if (instance)
+        if (Instance)
         {
             DestroyImmediate(gameObject);
         }
         else
         {
-            instance = this;
+            Instance = this;
 
             DontDestroyOnLoad(this);
         }
-
-
+        
         canvas = GetComponentInChildren<Canvas>();
         multiplier = 4;
 
         canvas.enabled = false;
         Time.timeScale = 1;
     }
-
-    // Update is called once per frame
-    void Update()
+    
+    private void Update()
     {
-        if(SceneManager.GetActiveScene().name == "Game")
+        switch(gameState)
         {
-            highscoreCounter += Mathf.RoundToInt(Time.deltaTime * multiplier);
-            highscoreText.text = "Highscore: " + highscoreCounter;
-        }
+            case GameState.MainMenu:
+                if (SceneManager.GetActiveScene().name == "Game")
+                    gameState = GameState.Loading;
+                break;
+            case GameState.Loading:
+                if (SceneManager.GetActiveScene().isLoaded && SceneManager.GetActiveScene().name == "Game")
+                    gameState = GameState.Game;
+                else if (SceneManager.GetActiveScene().isLoaded && SceneManager.GetActiveScene().name == "MainMenu")
+                    gameState = GameState.MainMenu;
+                break;
+            case GameState.Game:
+                highscoreCounter += Time.deltaTime * multiplier;
+                highscoreText.text = "Highscore: " + Mathf.RoundToInt(highscoreCounter);
 
-        if (Input.GetKeyDown(KeyCode.Escape) && SceneManager.GetActiveScene().name == "MainMenu" || Input.GetKeyDown(KeyCode.Escape) && SceneManager.GetActiveScene().name == "Game")
-        {
-            if (Time.timeScale == 0)
-            {
-                canvas.enabled = false;
-                Time.timeScale = 1;
-            }
-            else
-            {
-                canvas.enabled = true;
-                Time.timeScale = 0;
-            }
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    canvas.enabled = true;
+                    Time.timeScale = 0;
+                    gameState = GameState.Pause;
+                }
+                break;
+            case GameState.Pause:
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    canvas.enabled = false;
+                    Time.timeScale = 1;
+                    gameState = GameState.Game;
+                }
+                break;
         }
     }
     
@@ -65,18 +86,17 @@ public class GameManager : MonoBehaviour
         Application.Quit();
     }
 
-    public void GameOver()
+    public void MainMenu()
     {
-        Application.LoadLevel("GameOver");
+        Application.LoadLevel("MainMenu");
     }
 
     public void StartGame()
     {
-        Application.LoadLevel(1);
+        Application.LoadLevel("Game");
     }
     
-
-    public static GameManager instance
+    public static GameManager Instance
     {
         get { return _instance; }
         set { _instance = value; }
