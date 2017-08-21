@@ -1,12 +1,18 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+public enum LifeState
+{
+    Alive,
+    Dead
+}
+
 public class Player : MonoBehaviour
 {
     private CharacterController cc;
-    Animator anim;
+    private Animator anim;
 
-    Vector3 moveDirection = Vector3.zero;
+    private Vector3 moveDirection = Vector3.zero;
 
     public float moveSpeed;
     public float jumpForce;
@@ -14,6 +20,8 @@ public class Player : MonoBehaviour
     public float gravity;
 
     CapsuleCollider capCol;
+
+    protected LifeState lifeState;
     
     private void Start()
     {
@@ -24,36 +32,46 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        if (cc.isGrounded)
+        switch(lifeState)
         {
-            anim.SetBool("Grounded", true);
-            verticalVel = -gravity * Time.deltaTime;
+            case LifeState.Alive:
+                if (cc.isGrounded)
+                {
+                    anim.SetBool("Grounded", true);
+                    verticalVel = -gravity * Time.deltaTime;
 
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                verticalVel = jumpForce;
-                anim.SetBool("Sliding", false);
-            }
+                    if (Input.GetKeyDown(KeyCode.Space))
+                    {
+                        verticalVel = jumpForce;
+                        anim.SetBool("Sliding", false);
+                    }
+                }
+                else
+                {
+                    anim.SetBool("Grounded", false);
+                    verticalVel -= gravity * Time.deltaTime;
+                }
+
+                if (Input.GetKeyDown(KeyCode.LeftControl))
+                {
+                    anim.SetBool("Sliding", true);
+                    if (!cc.isGrounded)
+                    {
+                        verticalVel = -(0.5f * gravity);
+                    }
+                }
+
+                moveDirection.x = moveSpeed;
+
+                moveDirection = new Vector3(moveSpeed, verticalVel, 0);
+
+                cc.Move(moveDirection * Time.deltaTime);
+                break;
+            case LifeState.Dead:
+                
+                break;
         }
-        else
-        {
-            anim.SetBool("Grounded", false);
-            verticalVel -= gravity * Time.deltaTime;
-        }
-
-        if(Input.GetKeyDown(KeyCode.LeftControl))
-        {
-            anim.SetBool("Sliding", true);
-            if(!cc.isGrounded)
-            {
-                verticalVel = -gravity;
-            }
-        }
-        moveDirection.x = moveSpeed;
-
-        moveDirection = new Vector3(moveSpeed, verticalVel, 0);
-
-        cc.Move(moveDirection * Time.deltaTime);
+        
     }
 
     private void OnTriggerEnter(Collider other)
@@ -75,6 +93,16 @@ public class Player : MonoBehaviour
     {
         cc.height = 1f;
         capCol.height = 1.8f;
+    }
+
+    public void SetDead()
+    {
+        lifeState = LifeState.Dead;
+    }
+
+    public void SetAlive()
+    {
+        lifeState = LifeState.Alive;
     }
 
     IEnumerator WaitForDeath()
