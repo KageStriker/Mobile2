@@ -40,13 +40,9 @@ public class EndlessSpawner : MonoBehaviour
         for (int i = 0; i < powerlinesToSpawn.Length; i++)
         {
             powerlinesToSpawn[i].transform.position = i * powerlineSpaces;
-        }
-
-        for (int i = 0; i < powerlinesToSpawn.Length; i++)
-        {
             groundsToSpawn[i].transform.position = i * groundSpaces;
         }
-
+        
         powerlineCounter = 0;
         groundCounter = 0;
     }

@@ -19,9 +19,11 @@ public class Player : MonoBehaviour
     public float verticalVel;
     public float gravity;
 
-    CapsuleCollider capCol;
+    protected float health = 100;
 
     protected LifeState lifeState;
+
+    CapsuleCollider capCol;
     
     private void Start()
     {
@@ -84,9 +86,9 @@ public class Player : MonoBehaviour
 
     public void StandardCollider()
     {
+        anim.SetBool("Sliding", false);
         cc.height = 2.5f;
         capCol.height = 2.5f;
-        anim.SetBool("Sliding", false);
     }
 
     public void SlidingCollider()
