@@ -9,7 +9,7 @@ public class CameraFollow : MonoBehaviour
 
     private void Update()
     {
-        transform.position = new Vector3(player.position.x + 9, transform.position.y, transform.position.z);
+        transform.position = new Vector3(player.position.x + 10, transform.position.y, transform.position.z);
         skybox.transform.Rotate(new Vector3(0, 0, -0.1f));
     }
 }
