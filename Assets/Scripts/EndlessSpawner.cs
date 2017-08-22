@@ -18,12 +18,14 @@ public class EndlessSpawner : MonoBehaviour
     
     private GameObject[] powerlinesToSpawn;
     private Transform powerlineTrigger;
-
+    
     private GameObject[] groundsToSpawn;
     private Transform groundTrigger; 
 
     private Vector3 powerlineSpaces = new Vector3(149, 0, 0);
     private Vector3 groundSpaces = new Vector3(90, 0, 0);
+
+    private GameObject[] enemies;
     #endregion
 
     private void Start()
@@ -36,19 +38,21 @@ public class EndlessSpawner : MonoBehaviour
 
         powerlinesToSpawn = GameObject.FindGameObjectsWithTag("Powerlines");
         groundsToSpawn = GameObject.FindGameObjectsWithTag("Grounds");
+        enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
         for (int i = 0; i < powerlinesToSpawn.Length; i++)
         {
             powerlinesToSpawn[i].transform.position = i * powerlineSpaces;
-        }
-
-        for (int i = 0; i < powerlinesToSpawn.Length; i++)
-        {
             groundsToSpawn[i].transform.position = i * groundSpaces;
         }
-
+        
         powerlineCounter = 0;
         groundCounter = 0;
+
+        //for(int i = 0; i < enemies.Length; i++)
+        //{
+        //    enemies[i].active = false;
+        //}
     }
 
     private void Update()
@@ -72,7 +76,7 @@ public class EndlessSpawner : MonoBehaviour
 
         if(player.transform.position.x >= groundTrigger.position.x)
         {
-            if (groundCounter < powerlinesToSpawn.Length)
+            if (groundCounter < groundsToSpawn.Length)
             {
                 groundsToSpawn[groundCounter].transform.position += 3 * groundSpaces;
                 groundTrigger.transform.position += groundSpaces;
@@ -85,6 +89,6 @@ public class EndlessSpawner : MonoBehaviour
                 groundTrigger.transform.position += groundSpaces;
                 groundCounter++;
             }
-        } ///////////////////GROUND SPAWNER
+        } ///////////////////GROUND & BUILDING SPAWNER
     }
 }
