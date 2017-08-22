@@ -19,6 +19,8 @@ public class Player : MonoBehaviour
     public float verticalVel;
     public float gravity;
 
+    public float health;
+    
     CapsuleCollider capCol;
 
     protected LifeState lifeState;
@@ -103,6 +105,16 @@ public class Player : MonoBehaviour
     public void SetAlive()
     {
         lifeState = LifeState.Alive;
+    }
+
+    public void SetHealth(float _health)
+    {
+        health = _health;
+    }
+
+    public float GetHealth()
+    {
+        return health;
     }
 
     IEnumerator WaitForDeath()
