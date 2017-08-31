@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
 
     public GameState gameState;
     
-    private Canvas canvas;
+    private Canvas pauseCanvas, reticleCanvas, mmCanvas;
     public Text highscoreText;
 
     private float highscoreCounter;
@@ -27,6 +27,8 @@ public class GameManager : MonoBehaviour
     
     private void Start()
     {
+        Screen.orientation = ScreenOrientation.Landscape;
+
         if (Instance)
         {
             DestroyImmediate(gameObject);
@@ -37,11 +39,16 @@ public class GameManager : MonoBehaviour
 
             DontDestroyOnLoad(this);
         }
-        
-        canvas = GetComponentInChildren<Canvas>();
+
+        pauseCanvas = GameObject.Find("PauseCanvas").GetComponent<Canvas>();
+        reticleCanvas = GameObject.Find("ReticleCanvas").GetComponent<Canvas>();
+        mmCanvas = GameObject.Find("MenuCanvas").GetComponent<Canvas>();
+
+        pauseCanvas.enabled = false;
+        reticleCanvas.enabled = false;
+
         multiplier = 4;
 
-        canvas.enabled = false;
         Time.timeScale = 1;
     }
     
@@ -51,6 +58,9 @@ public class GameManager : MonoBehaviour
         {
             case GameState.MainMenu:
                 if (SceneManager.GetActiveScene().name == "Game")
+                    if (!mmCanvas.enabled)
+                        mmCanvas.enabled = true;
+
                     gameState = GameState.Loading;
                 break;
             case GameState.Loading:
@@ -63,9 +73,15 @@ public class GameManager : MonoBehaviour
                 highscoreCounter += Time.deltaTime * multiplier;
                 highscoreText.text = "Highscore: " + Mathf.RoundToInt(highscoreCounter);
 
+                if (!reticleCanvas.enabled)
+                    reticleCanvas.enabled = true;
+
+                if (mmCanvas.enabled)
+                    mmCanvas.enabled = false;
+
                 if (Input.GetKeyDown(KeyCode.Escape))
                 {
-                    canvas.enabled = true;
+                    pauseCanvas.enabled = true;
                     Time.timeScale = 0;
                     gameState = GameState.Pause;
                 }
@@ -73,7 +89,8 @@ public class GameManager : MonoBehaviour
             case GameState.Pause:
                 if (Input.GetKeyDown(KeyCode.Escape))
                 {
-                    canvas.enabled = false;
+                    reticleCanvas.enabled = false;
+                    pauseCanvas.enabled = false;
                     Time.timeScale = 1;
                     gameState = GameState.Game;
                 }
@@ -88,12 +105,12 @@ public class GameManager : MonoBehaviour
 
     public void MainMenu()
     {
-        Application.LoadLevel("MainMenu");
+        SceneManager.LoadScene("MainMenu");
     }
 
     public void StartGame()
     {
-        Application.LoadLevel("Game");
+        SceneManager.LoadScene("Game");
     }
     
     public static GameManager Instance
