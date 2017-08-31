@@ -24,6 +24,8 @@ public class Player : MonoBehaviour
     protected LifeState lifeState;
 
     CapsuleCollider capCol;
+
+    Touch touch;
     
     private void Start()
     {
@@ -34,44 +36,91 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        switch(lifeState)
+        moveSpeed += 0.05f * Time.deltaTime;
+
+        if (Input.touchSupported && Input.touchCount > 0)
         {
-            case LifeState.Alive:
-                if (cc.isGrounded)
-                {
-                    anim.SetBool("Grounded", true);
-                    verticalVel = -gravity * Time.deltaTime;
-
-                    if (Input.GetKeyDown(KeyCode.Space))
+            switch (lifeState)
+            {
+                case LifeState.Alive:
+                    if (cc.isGrounded)
                     {
-                        verticalVel = jumpForce;
-                        anim.SetBool("Sliding", false);
-                    }
-                }
-                else
-                {
-                    anim.SetBool("Grounded", false);
-                    verticalVel -= gravity * Time.deltaTime;
-                }
+                        anim.SetBool("Grounded", true);
+                        verticalVel = -gravity * Time.deltaTime;
 
-                if (Input.GetKeyDown(KeyCode.LeftControl))
-                {
-                    anim.SetBool("Sliding", true);
-                    if (!cc.isGrounded)
+                        if (Input.GetTouch(0).phase == TouchPhase.Began)
+                        {
+                            verticalVel = jumpForce;
+                            anim.SetBool("Sliding", false);
+                        }
+                    }
+                    else
                     {
-                        verticalVel = -(0.5f * gravity);
+                        anim.SetBool("Grounded", false);
+                        verticalVel -= gravity * Time.deltaTime;
                     }
-                }
 
-                moveDirection.x = moveSpeed;
+                    if (Input.GetKeyDown(KeyCode.LeftControl))
+                    {
+                        anim.SetBool("Sliding", true);
+                        if (!cc.isGrounded)
+                        {
+                            verticalVel = -(0.5f * gravity);
+                        }
+                    }
 
-                moveDirection = new Vector3(moveSpeed, verticalVel, 0);
+                    moveDirection.x = moveSpeed;
 
-                cc.Move(moveDirection * Time.deltaTime);
-                break;
-            case LifeState.Dead:
-                
-                break;
+                    moveDirection = new Vector3(moveSpeed, verticalVel, 0);
+
+                    cc.Move(moveDirection * Time.deltaTime);
+                    break;
+                case LifeState.Dead:
+
+                    break;
+            }
+        }
+        else
+        {
+            switch (lifeState)
+            {
+                case LifeState.Alive:
+                    if (cc.isGrounded)
+                    {
+                        anim.SetBool("Grounded", true);
+                        verticalVel = -gravity * Time.deltaTime;
+
+                        if (Input.GetKeyDown(KeyCode.Space))
+                        {
+                            verticalVel = jumpForce;
+                            anim.SetBool("Sliding", false);
+                        }
+                    }
+                    else
+                    {
+                        anim.SetBool("Grounded", false);
+                        verticalVel -= gravity * Time.deltaTime;
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.LeftControl))
+                    {
+                        anim.SetBool("Sliding", true);
+                        if (!cc.isGrounded)
+                        {
+                            verticalVel = -(0.5f * gravity);
+                        }
+                    }
+
+                    moveDirection.x = moveSpeed;
+
+                    moveDirection = new Vector3(moveSpeed, verticalVel, 0);
+
+                    cc.Move(moveDirection * Time.deltaTime);
+                    break;
+                case LifeState.Dead:
+
+                    break;
+            }
         }
     }
 
