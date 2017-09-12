@@ -21,15 +21,20 @@ public class GameManager : MonoBehaviour
 
     private Canvas pauseCanvas, mmCanvas;
     public Canvas reticleCanvas;
-    public Text highscoreText;
+    public Text scoreText;
+    public Text pauseHighscoreText;
+    public Text mainMenuHighscoreText;
     public Transform player;
     public GameObject[] enemies;
 
-    private float highscoreCounter;
+    private float scoreCounter;
+    private float savedHighscoreCounter;
     private float multiplier;
     
     private void Start()
     {
+        savedHighscoreCounter = PlayerPrefs.GetInt("Highscore");
+
         Screen.orientation = ScreenOrientation.Landscape;
 
         if (Instance)
@@ -49,6 +54,8 @@ public class GameManager : MonoBehaviour
 
         pauseCanvas.enabled = false;
         reticleCanvas.enabled = false;
+
+        mainMenuHighscoreText.text = "Highscore: " + Mathf.RoundToInt(savedHighscoreCounter);
 
         multiplier = 4;
 
@@ -79,8 +86,8 @@ public class GameManager : MonoBehaviour
                 if (enemies == null)
                     enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
-                highscoreCounter += Time.deltaTime * multiplier;
-                highscoreText.text = "Highscore: " + Mathf.RoundToInt(highscoreCounter);
+                scoreCounter += Time.deltaTime * multiplier;
+                scoreText.text = "Score: " + Mathf.RoundToInt(scoreCounter);
 
                 if (!reticleCanvas.enabled)
                     reticleCanvas.enabled = true;
@@ -90,6 +97,12 @@ public class GameManager : MonoBehaviour
 
                 if (Input.GetKeyDown(KeyCode.Escape))
                 {
+                    if (scoreCounter > savedHighscoreCounter)
+                    {
+                        pauseHighscoreText.text = "Highscore: " + Mathf.RoundToInt(scoreCounter);
+                    }
+                    else
+                        pauseHighscoreText.text = "highscore: " + Mathf.RoundToInt(savedHighscoreCounter);
                     pauseCanvas.enabled = true;
                     Time.timeScale = 0;
                     gameState = GameState.Pause;
@@ -109,11 +122,20 @@ public class GameManager : MonoBehaviour
     
     public void QuitGame()
     {
+        if (scoreCounter > savedHighscoreCounter)
+        {
+            PlayerPrefs.SetInt("Highscore", Mathf.RoundToInt(scoreCounter));
+        }
         Application.Quit();
     }
 
     public void MainMenu()
     {
+        if (scoreCounter > savedHighscoreCounter)
+        {
+            PlayerPrefs.SetInt("Highscore", Mathf.RoundToInt(scoreCounter));
+        }
+        gameState = GameState.MainMenu;
         SceneManager.LoadScene("MainMenu");
     }
 
@@ -126,5 +148,10 @@ public class GameManager : MonoBehaviour
     {
         get { return _instance; }
         set { _instance = value; }
+    }
+
+    private void SaveGame()
+    {
+
     }
 }
