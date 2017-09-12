@@ -7,8 +7,6 @@ public class EndlessSpawner : MonoBehaviour
     #region Variables
     GameManager gm;
 
-    public Transform player;
-
     // Powerline, obstacle and ground to spawn
     private int powerlineCounter;
     private int groundCounter;
@@ -63,67 +61,70 @@ public class EndlessSpawner : MonoBehaviour
 
     private void Update()
     {
-        switch (gm.gameState)
+        if (GameManager.Instance.player != null)
         {
-            case GameState.Game:
-                ///////////////////POWERLINE SPAWNER
-                if (player.transform.position.x >= powerlineTrigger.position.x)
-                {
-                    if (powerlineCounter < powerlinesToSpawn.Length)
+            switch (gm.gameState)
+            {
+                case GameState.Game:
+                    ///////////////////POWERLINE SPAWNER
+                    if (GameManager.Instance.player.position.x >= powerlineTrigger.position.x)
                     {
-                        powerlinesToSpawn[powerlineCounter].transform.position += 3 * powerlineSpaces;
-                        powerlineTrigger.transform.position += powerlineSpaces;
-                        powerlineCounter++;
+                        if (powerlineCounter < powerlinesToSpawn.Length)
+                        {
+                            powerlinesToSpawn[powerlineCounter].transform.position += 3 * powerlineSpaces;
+                            powerlineTrigger.transform.position += powerlineSpaces;
+                            powerlineCounter++;
+                        }
+                        else
+                        {
+                            powerlineCounter = 0;
+                            powerlinesToSpawn[powerlineCounter].transform.position += 3 * powerlineSpaces;
+                            powerlineTrigger.transform.position += powerlineSpaces;
+                            powerlineCounter++;
+                        }
                     }
-                    else
+                    ///////////////////GROUND SPAWNER
+                    if (GameManager.Instance.player.position.x >= groundTrigger.position.x)
                     {
-                        powerlineCounter = 0;
-                        powerlinesToSpawn[powerlineCounter].transform.position += 3 * powerlineSpaces;
-                        powerlineTrigger.transform.position += powerlineSpaces;
-                        powerlineCounter++;
+                        if (groundCounter < powerlinesToSpawn.Length)
+                        {
+                            groundsToSpawn[groundCounter].transform.position += 3 * groundSpaces;
+                            groundTrigger.transform.position += groundSpaces;
+                            groundCounter++;
+                        }
+                        else
+                        {
+                            groundCounter = 0;
+                            groundsToSpawn[groundCounter].transform.position += 3 * groundSpaces;
+                            groundTrigger.transform.position += groundSpaces;
+                            groundCounter++;
+                        }
                     }
-                }
-                ///////////////////GROUND SPAWNER
-                if (player.transform.position.x >= groundTrigger.position.x)
-                {
-                    if (groundCounter < powerlinesToSpawn.Length)
+                    ///////////////////OBSTACLE SPAWNER
+                    if (GameManager.Instance.player.position.x >= obstacleTrigger.position.x)
                     {
-                        groundsToSpawn[groundCounter].transform.position += 3 * groundSpaces;
-                        groundTrigger.transform.position += groundSpaces;
-                        groundCounter++;
-                    }
-                    else
-                    {
-                        groundCounter = 0;
-                        groundsToSpawn[groundCounter].transform.position += 3 * groundSpaces;
-                        groundTrigger.transform.position += groundSpaces;
-                        groundCounter++;
-                    }
-                }
-                ///////////////////OBSTACLE SPAWNER
-                if (player.transform.position.x >= obstacleTrigger.position.x)
-                {
-                    previousObstacle = obstacleCounter;
+                        previousObstacle = obstacleCounter;
 
-                    obstacleToSpawn[previousObstacle].SetActive(false);
+                        obstacleToSpawn[previousObstacle].SetActive(false);
 
-                    while (obstacleCounter == previousObstacle)
-                    {
-                        obstacleCounter = Random.Range(0, 6);
+                        while (obstacleCounter == previousObstacle)
+                        {
+                            obstacleCounter = Random.Range(0, 6);
+                        }
+
+                        obstacleToSpawn[obstacleCounter].SetActive(true);
+
+                        obstacleToSpawn[obstacleCounter].transform.position = (GameManager.Instance.player.position - new Vector3(0, GameManager.Instance.player.position.y, 0)) + obstacleSpaces;
+                        obstacleTrigger.transform.position += (1.5f * obstacleSpaces);
                     }
-
-                    obstacleToSpawn[obstacleCounter].SetActive(true);
-
-                    obstacleToSpawn[obstacleCounter].transform.position = (player.position - new Vector3(0,player.position.y, 0)) + obstacleSpaces;
-                    obstacleTrigger.transform.position += (1.5f * obstacleSpaces);
-                }
-                break;
-            case GameState.Pause:
-                break;
-            case GameState.MainMenu:
-                break;
-            case GameState.Loading:
-                break;
-        }
+                    break;
+                case GameState.Pause:
+                    break;
+                case GameState.MainMenu:
+                    break;
+                case GameState.Loading:
+                    break;
+            }
+        } 
     }
 }

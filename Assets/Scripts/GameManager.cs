@@ -18,9 +18,12 @@ public class GameManager : MonoBehaviour
     static GameManager _instance = null;
 
     public GameState gameState;
-    
-    private Canvas pauseCanvas, reticleCanvas, mmCanvas;
+
+    private Canvas pauseCanvas, mmCanvas;
+    public Canvas reticleCanvas;
     public Text highscoreText;
+    public Transform player;
+    public GameObject[] enemies;
 
     private float highscoreCounter;
     private float multiplier;
@@ -70,6 +73,12 @@ public class GameManager : MonoBehaviour
                     gameState = GameState.MainMenu;
                 break;
             case GameState.Game:
+                if (!player)
+                    player = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
+
+                if (enemies == null)
+                    enemies = GameObject.FindGameObjectsWithTag("Enemy");
+
                 highscoreCounter += Time.deltaTime * multiplier;
                 highscoreText.text = "Highscore: " + Mathf.RoundToInt(highscoreCounter);
 

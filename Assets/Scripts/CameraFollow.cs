@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    public Transform player;
     public GameObject skybox;
 
     private void Update()
     {
-        transform.position = new Vector3(player.position.x + 10, transform.position.y, transform.position.z);
+        if (GameManager.Instance.player != null)
+        {
+            transform.position = new Vector3(GameManager.Instance.player.position.x + 10, transform.position.y, transform.position.z); 
+        }
         skybox.transform.Rotate(new Vector3(0, 0, -0.1f));
     }
 }

@@ -5,15 +5,11 @@ using UnityEngine;
 public class ObstacleSpawner : MonoBehaviour
 {
     private List<GameObject> obstaclesToSpawn;
-    private Transform player;
 
     private static int obstacleNum;
 
     private void Start()
     {
-        if (!player)
-            player = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
-
         obstaclesToSpawn = new List<GameObject>();
         
         foreach (GameObject g in GameObject.FindGameObjectsWithTag("Obstacle"))

@@ -5,94 +5,43 @@ using UnityEngine.UI;
 
 public class EnemySniper : MonoBehaviour
 {
-    private Transform player;
-    private Player playerVars;
     private Animator anim;
-    private GameObject[] images;
+    private Canvas retCanvas;
     private Image img;
+    public Sprite reticle;
 
-    private bool shoot;
-    private float index;
-    private float amplitudeX = 1f;
-    private float amplitudeY = 1f;
-    private float omegaX = 0.8f;
-    private float omegaY = 0.8f;
-
-    private static int activeReticles;
-
-    public float counter;
-    public Transform targetLockPos;
     
     private void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
-        images = GameObject.FindGameObjectsWithTag("Reticles");
-        playerVars = player.GetComponent<Player>();
         anim = GetComponent<Animator>();
-
-        if(!img)
-        {
-            for (int i = 0; i < images.Length; i++)
-            {
-                if (i == activeReticles)
-                {
-                    img = images[i].GetComponent<Image>();
-                    activeReticles++;
-                    break;
-                }
-                else
-                {
-                    continue;
-                }
-            }
-        }
-
-        img.enabled = false;
     }
 
     private void Update()
     {
-        //if(Vector3.Distance(transform.position, player.transform.position) < 50)
-        //{
-        //    counter += Time.deltaTime * 1.5f;
-
-        //    transform.LookAt(player.transform.position, Vector3.up);
-
-        //    if(counter >= 5)
-        //    {
-        //        anim.SetTrigger("Shoot");
-        //        counter = 0;
-        //    }
-        //}
-
-        if (transform.position.x - player.transform.position.x < 40 && transform.position.x - player.transform.position.x > -20)
+        if(retCanvas != null && img.sprite == null)
         {
-            counter += Time.deltaTime * 1.5f;
-            index += Time.deltaTime;
+            retCanvas = GameObject.Find("ReticleCanvas").GetComponent<Canvas>();
 
-            transform.LookAt(player.transform.position, Vector3.up);
-
-            if (counter >= 5)
-            {
-                anim.SetTrigger("Shoot");
-                counter = 0;
-            }
-            
-            float x = amplitudeX * Mathf.Sin(omegaX * index);
-            float y = Mathf.Abs(amplitudeY * Mathf.Sin(omegaY * index));
-
-            img.transform.localScale = new Vector3(x, y, 1);
-
-            img.enabled = true;
-
-            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(Camera.main, targetLockPos.position);
-
-            img.rectTransform.position = new Vector2(screenPoint.x, screenPoint.y);
+            img.sprite = reticle;
+            img = retCanvas.gameObject.AddComponent<Image>();
         }
-        else
+
+        if (GameManager.Instance.player != null && img != null)
         {
-            img.enabled = false;
-            activeReticles--;
+            if (transform.position.x - GameManager.Instance.player.position.x < 40 && transform.position.x - GameManager.Instance.player.position.x > -30)
+            {
+                transform.LookAt(GameManager.Instance.player.position, Vector3.up);
+                
+                img.enabled = true;
+
+                Vector2 screenPoint = Camera.main.WorldToScreenPoint(this.transform.position);
+
+                img.rectTransform.position = new Vector2(screenPoint.x, screenPoint.y);
+            }
+            else
+            {
+                img.enabled = false;
+            } 
         }
     }
 }
