@@ -7,10 +7,9 @@ public class EnemySniper : MonoBehaviour
 {
     private Animator anim;
 
-    private static Image[] img;
+    public static Button[] img;
     private static int index;
-    private int thisIndex;
-
+    public int thisIndex;
     private bool shoot;
 
     private Vector3 offset;
@@ -22,7 +21,7 @@ public class EnemySniper : MonoBehaviour
         anim = GetComponent<Animator>();
         if (img == null)
         {
-            img = new Image[6]; 
+            img = new Button[6]; 
         }
 
         if (index == 0)
@@ -36,7 +35,7 @@ public class EnemySniper : MonoBehaviour
             index++;
         }
 
-        img[thisIndex] = GameObject.Find("ReticleImage0" + index.ToString()).GetComponent<Image>();
+        img[thisIndex] = GameObject.Find("ReticleImage0" + index.ToString()).GetComponent<Button>();
     }
 
     private void Update()
@@ -52,13 +51,15 @@ public class EnemySniper : MonoBehaviour
                 if (!img[thisIndex].enabled)
                 {
                     img[thisIndex].enabled = true;
+                    img[thisIndex].image.enabled = true;
                 }
 
-                img[thisIndex].rectTransform.position = new Vector2(screenPoint.x, screenPoint.y);
+                img[thisIndex].image.rectTransform.position = new Vector2(screenPoint.x, screenPoint.y);
             }
             else
             {
                 img[thisIndex].enabled = false;
+                img[thisIndex].image.enabled = false;
             }
 
             if (transform.position.x - GameManager.Instance.player.position.x < 30 && transform.position.x - GameManager.Instance.player.position.x > -40 && shoot)

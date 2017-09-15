@@ -101,22 +101,22 @@ public class EndlessSpawner : MonoBehaviour
                         }
                     }
                     ///////////////////OBSTACLE SPAWNER
-                    if (GameManager.Instance.player.position.x >= obstacleTrigger.position.x)
-                    {
-                        previousObstacle = obstacleCounter;
+                    //if (GameManager.Instance.player.position.x >= obstacleTrigger.position.x)
+                    //{
+                    //    previousObstacle = obstacleCounter;
 
-                        obstacleToSpawn[previousObstacle].SetActive(false);
+                    //    obstacleToSpawn[previousObstacle].SetActive(false);
 
-                        while (obstacleCounter == previousObstacle)
-                        {
-                            obstacleCounter = Random.Range(0, 6);
-                        }
+                    //    while (obstacleCounter == previousObstacle)
+                    //    {
+                    //        obstacleCounter = Random.Range(0, 6);
+                    //    }
 
-                        obstacleToSpawn[obstacleCounter].SetActive(true);
+                    //    obstacleToSpawn[obstacleCounter].SetActive(true);
 
-                        obstacleToSpawn[obstacleCounter].transform.position = (GameManager.Instance.player.position - new Vector3(0, GameManager.Instance.player.position.y, 0)) + obstacleSpaces;
-                        obstacleTrigger.transform.position += (1.5f * obstacleSpaces);
-                    }
+                    //    obstacleToSpawn[obstacleCounter].transform.position = (GameManager.Instance.player.position - new Vector3(0, GameManager.Instance.player.position.y, 0)) + obstacleSpaces;
+                    //    obstacleTrigger.transform.position += (1.5f * obstacleSpaces);
+                    //}
                     break;
                 case GameState.Pause:
                     break;

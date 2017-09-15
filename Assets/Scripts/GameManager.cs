@@ -26,13 +26,20 @@ public class GameManager : MonoBehaviour
     public Text mainMenuHighscoreText;
     public Transform player;
     public GameObject[] enemies;
+    public GameObject[] enemySpawns;
+    public Text debugText;
+    public bool load;
+
+    EnemySniper temp;
 
     private float scoreCounter;
     private float savedHighscoreCounter;
     private float multiplier;
+    private int counter;
     
     private void Start()
     {
+
         savedHighscoreCounter = PlayerPrefs.GetInt("Highscore");
 
         Screen.orientation = ScreenOrientation.Landscape;
@@ -67,6 +74,9 @@ public class GameManager : MonoBehaviour
         switch(gameState)
         {
             case GameState.MainMenu:
+                if (scoreCounter > 0)
+                    scoreCounter = 0;
+
                 if (SceneManager.GetActiveScene().name == "Game")
                     if (!mmCanvas.enabled)
                         mmCanvas.enabled = true;
@@ -75,16 +85,25 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.Loading:
                 if (SceneManager.GetActiveScene().isLoaded && SceneManager.GetActiveScene().name == "Game")
+                {
+                    load = true;
                     gameState = GameState.Game;
+                }
                 else if (SceneManager.GetActiveScene().isLoaded && SceneManager.GetActiveScene().name == "MainMenu")
                     gameState = GameState.MainMenu;
                 break;
             case GameState.Game:
-                if (!player)
+                if (Time.timeScale <= 0 || load)
+                    Time.timeScale = 1;
+
+                if (!player || load)
                     player = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
 
-                if (enemies == null)
+                if (enemies == null || load)
                     enemies = GameObject.FindGameObjectsWithTag("Enemy");
+
+                if (enemySpawns == null || load)
+                    enemySpawns = GameObject.FindGameObjectsWithTag("EnemySpawns");
 
                 scoreCounter += Time.deltaTime * multiplier;
                 scoreText.text = "Score: " + Mathf.RoundToInt(scoreCounter);
@@ -102,16 +121,18 @@ public class GameManager : MonoBehaviour
                         pauseHighscoreText.text = "Highscore: " + Mathf.RoundToInt(scoreCounter);
                     }
                     else
-                        pauseHighscoreText.text = "highscore: " + Mathf.RoundToInt(savedHighscoreCounter);
+                        pauseHighscoreText.text = "Highscore: " + Mathf.RoundToInt(savedHighscoreCounter);
+                    reticleCanvas.enabled = false;
                     pauseCanvas.enabled = true;
                     Time.timeScale = 0;
                     gameState = GameState.Pause;
                 }
+                load = false;
                 break;
             case GameState.Pause:
                 if (Input.GetKeyDown(KeyCode.Escape))
                 {
-                    reticleCanvas.enabled = false;
+                    reticleCanvas.enabled = true;
                     pauseCanvas.enabled = false;
                     Time.timeScale = 1;
                     gameState = GameState.Game;
@@ -143,15 +164,16 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene("Game");
     }
-    
+
+    public void RespawnEnemy()
+    {
+        counter++;
+        debugText.text = "Bang" + counter.ToString();
+    }
+
     public static GameManager Instance
     {
         get { return _instance; }
         set { _instance = value; }
-    }
-
-    private void SaveGame()
-    {
-
     }
 }
