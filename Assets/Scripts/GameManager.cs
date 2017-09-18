@@ -99,12 +99,15 @@ public class GameManager : MonoBehaviour
                 if (!player || load)
                     player = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
 
-                if (enemies == null || load)
-                    enemies = GameObject.FindGameObjectsWithTag("Enemy");
-
                 if (enemySpawns == null || load)
                     enemySpawns = GameObject.FindGameObjectsWithTag("EnemySpawns");
 
+                if (enemies == null || load)
+                {
+                    enemies = GameObject.FindGameObjectsWithTag("Enemy");
+                    SpawnEnemies();
+                }
+                
                 scoreCounter += Time.deltaTime * multiplier;
                 scoreText.text = "Score: " + Mathf.RoundToInt(scoreCounter);
 
@@ -114,6 +117,13 @@ public class GameManager : MonoBehaviour
                 if (mmCanvas.enabled)
                     mmCanvas.enabled = false;
 
+                for (int i = 0; i < enemies.Length; i++)
+                {
+                    if (enemies[i].transform.position.x - GameManager.Instance.player.transform.position.x > 50)
+                    {
+                        RespawnEnemy(enemies[i]);
+                    }
+                }
                 if (Input.GetKeyDown(KeyCode.Escape))
                 {
                     if (scoreCounter > savedHighscoreCounter)
@@ -165,10 +175,17 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("Game");
     }
 
-    public void RespawnEnemy()
+    public void RespawnEnemy(GameObject go)
     {
-        counter++;
-        debugText.text = "Bang" + counter.ToString();
+        go.transform.position = enemySpawns[Random.Range(0, enemySpawns.Length)].transform.position;
+    }
+
+    public void SpawnEnemies()
+    {
+        for(int i = 0; i < enemies.Length; i++)
+        {
+            enemies[i].transform.position = enemySpawns[Random.Range(0, enemySpawns.Length)].transform.position;
+        }
     }
 
     public static GameManager Instance

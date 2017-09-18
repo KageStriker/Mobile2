@@ -51,7 +51,7 @@ public class EndlessSpawner : MonoBehaviour
         {
             powerlinesToSpawn[i].transform.position = i * powerlineSpaces;
             groundsToSpawn[i].transform.position = i * groundSpaces;
-            obstacleToSpawn[i].SetActive(false);
+            //obstacleToSpawn[i].SetActive(false);
         }
 
         powerlineCounter = 0;
